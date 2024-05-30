@@ -1,6 +1,5 @@
 <script>
   import { onMount } from 'svelte';
-  import { fetchBooks, addBook, getBook, updateBook, deleteBook } from '$lib/index';
   import { getAuthToken } from '$lib/session'; // Function to retrieve the session token
 
   let books = [];
@@ -8,45 +7,98 @@
   let newBook = { title: '', author: '', published_date: '', isbn: '' };
   let editBook = null; // For storing the book being edited
 
-  onMount(async () => {
-    await loadBooks();
-  });
+  const SERVER_URL = 'http://localhost:5000'; // Specify your server URL
 
-  async function loadBooks() {
+  async function fetchBooks(serverUrl = SERVER_URL) {
     try {
+      console.log('Fetching books...');
       const token = getAuthToken(); // Get session token
-      books = await fetchBooks(token);
+      console.log('Token:', token);
+      const response = await fetch(`${serverUrl}/books`, {
+        headers: {
+          Authorization: `Bearer ${token}` // Include the token in the request headers
+        }
+      });
+
+      console.log('Response:', response);
+      if (!response.ok) {
+        throw new Error('Failed to fetch books');
+      }
+
+      books = await response.json();
+      console.log('Books:', books);
     } catch (error) {
       console.error('Error fetching books:', error);
       errorMessage = 'Failed to load books. Please try again later.';
     }
   }
 
-  async function handleAddBook() {
+  async function addBook(bookData, serverUrl = SERVER_URL) {
     try {
+      console.log('Adding book...');
       const token = getAuthToken(); // Get session token
-      const addedBook = await addBook(newBook, token);
+      console.log('Token:', token);
+      const response = await fetch(`${serverUrl}/books`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${token}` // Include the token in the request headers
+        },
+        body: JSON.stringify(bookData)
+      });
+
+      console.log('Response:', response);
+      if (!response.ok) {
+        throw new Error('Failed to add book');
+      }
+
+      const addedBook = await response.json();
+      console.log('Added Book:', addedBook);
+
       books = [...books, addedBook];
+      console.log('Updated Books:', books);
+
       newBook = { title: '', author: '', published_date: '', isbn: '' };
+      console.log('New Book:', newBook);
     } catch (error) {
       console.error('Error adding book:', error);
       errorMessage = 'Failed to add book. Please try again later.';
     }
   }
 
-  async function handleEditBook(bookId) {
+  async function getBook(bookId, serverUrl = SERVER_URL) {
     try {
-      editBook = await getBook(bookId);
+      const token = getAuthToken(); // Get session token
+      const response = await fetch(`${serverUrl}/books/${bookId}`, {
+        headers: {
+          Authorization: `Bearer ${token}` // Include the token in the request headers
+        }
+      });
+      if (!response.ok) {
+        throw new Error('Failed to fetch book');
+      }
+      editBook = await response.json();
     } catch (error) {
       console.error('Error fetching book:', error);
       errorMessage = 'Failed to fetch book for editing. Please try again later.';
     }
   }
 
-  async function handleUpdateBook() {
+  async function updateBook(bookId, bookData, serverUrl = SERVER_URL) {
     try {
       const token = getAuthToken(); // Get session token
-      const updatedBook = await updateBook(editBook.id, editBook, token);
+      const response = await fetch(`${serverUrl}/books/${bookId}`, {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${token}` // Include the token in the request headers
+        },
+        body: JSON.stringify(bookData)
+      });
+      if (!response.ok) {
+        throw new Error('Failed to update book');
+      }
+      const updatedBook = await response.json();
       books = books.map(book => (book.id === updatedBook.id ? updatedBook : book));
       editBook = null;
     } catch (error) {
@@ -55,17 +107,67 @@
     }
   }
 
-  async function handleDeleteBook(bookId) {
+  async function deleteBook(bookId, serverUrl = SERVER_URL) {
     try {
       const token = getAuthToken(); // Get session token
-      await deleteBook(bookId, token);
+      const response = await fetch(`${serverUrl}/books/${bookId}`, {
+        method: 'DELETE',
+        headers: {
+          Authorization: `Bearer ${token}` // Include the token in the request headers
+        }
+      });
+      if (!response.ok) {
+        throw new Error('Failed to delete book');
+      }
       books = books.filter(book => book.id !== bookId);
     } catch (error) {
       console.error('Error deleting book:', error);
       errorMessage = 'Failed to delete book. Please try again later.';
     }
   }
+
+  async function handleAddBook() {
+    try {
+      await addBook(newBook);
+    } catch (error) {
+      console.error('Error adding book:', error);
+      errorMessage = 'Failed to add book. Please try again later.';
+    }
+  }
+
+  async function handleUpdateBook() {
+    try {
+      const { id, ...updatedBookData } = editBook;
+      await updateBook(id, updatedBookData);
+    } catch (error) {
+      console.error('Error updating book:', error);
+      errorMessage = 'Failed to update book. Please try again later.';
+    }
+  }
+
+  async function handleEditBook(bookId) {
+    try {
+      await getBook(bookId);
+    } catch (error) {
+      console.error('Error fetching book:', error);
+      errorMessage = 'Failed to fetch book for editing. Please try again later.';
+    }
+  }
+
+  async function handleDeleteBook(bookId) {
+    try {
+      await deleteBook(bookId);
+    } catch (error) {
+      console.error('Error deleting book:', error);
+      errorMessage = 'Failed to delete book. Please try again later.';
+    }
+  }
+
+  onMount(async () => {
+    await fetchBooks();
+  });
 </script>
+
 <style>
   main {
     display: flex;

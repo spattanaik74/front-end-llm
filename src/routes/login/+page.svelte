@@ -1,6 +1,10 @@
 <script>
   import { setAuthToken } from '$lib/session'; // Import the setAuthToken function
+  // import { getCookie } from 'svelte-cookie';
 
+
+
+  
   let username = '';
   let password = '';
   let errorMessage = '';
@@ -12,21 +16,17 @@
         headers: {
           'Content-Type': 'application/json'
         },
-        body: JSON.stringify({ username, password })
+        body: JSON.stringify({ username, password }),
       });
       
       if (response.ok) {
         const data = await response.json();
-        const token = data.token;
+        const token = data.token; // Extract the token from the response
+        
+        console.log('Received token:', token);
 
-
-        console.log('Session token:', token);
-
-
-
-        setAuthToken(token); // Store the token received from the backend
-
-        localStorage.setItem('token', token);         // Store the token in browser's localStorage
+        // Store the token using setAuthToken function
+        setAuthToken(token);
 
         window.location.href = '/books'; // Redirect to the books page
       } else {
