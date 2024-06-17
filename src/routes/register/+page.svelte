@@ -24,95 +24,35 @@
       errorMessage = 'Failed to register. Please try again later.';
     }
   }
+
+
+
+
+  import Page from '../+Page.svelte';
 </script>
 
-<style>
-  main {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    height: 100vh;
-    background-color: #f0f8ff;
-    color: #333;
-    font-family: Arial, sans-serif;
-  }
 
-  h1 {
-    color: #2c3e50;
-    margin-bottom: 20px;
-  }
 
-  form {
-    display: flex;
-    flex-direction: column;
-    width: 300px;
-    padding: 20px;
-    background: #fff;
-    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
-    border-radius: 8px;
-  }
 
-  label {
-    margin-bottom: 10px;
-    color: #555;
-  }
 
-  input {
-    padding: 10px;
-    margin-top: 5px;
-    border: 1px solid #ccc;
-    border-radius: 4px;
-    font-size: 1em;
-  }
 
-  button {
-    padding: 10px;
-    margin-top: 20px;
-    background-color: #3498db;
-    color: white;
-    border: none;
-    border-radius: 4px;
-    font-size: 1em;
-    cursor: pointer;
-    transition: background-color 0.3s ease;
-  }
 
-  button:hover {
-    background-color: #2980b9;
-  }
-
-  p {
-    margin-top: 15px;
-    color: red;
-  }
-
-  a {
-    color: #3498db;
-    text-decoration: none;
-    margin-top: 15px;
-  }
-
-  a:hover {
-    text-decoration: underline;
-  }
-</style>
-
-<main>
-  <h1>Register</h1>
-  <form on:submit|preventDefault={handleRegister}>
-    <label>
-      Username:
-      <input type="text" bind:value={username} required />
+<main class="max-w-lg mx-auto mt-10 p-6 bg-white rounded-lg shadow-xl">
+  <h1 class="text-3xl font-semibold mb-6">Register</h1>
+  <form on:submit|preventDefault={handleRegister} class="space-y-4">
+    <label class="block">
+      <span class="text-gray-700">Username:</span>
+      <input type="text" bind:value={username} required class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50" />
     </label>
-    <label>
-      Password:
-      <input type="password" bind:value={password} required />
+    <label class="block">
+      <span class="text-gray-700">Password:</span>
+      <input type="password" bind:value={password} required class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50" />
     </label>
-    <button type="submit">Register</button>
+    <button type="submit" class="w-full py-2 px-4 border border-transparent rounded-md shadow-sm text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">Register</button>
     {#if errorMessage}
-      <p>{errorMessage}</p>
+      <p class="text-red-500">{errorMessage}</p>
     {/if}
   </form>
-  <p>Already have an account? <a href="/login">Login here</a>.</p>
+  <p class="mt-4 text-gray-600">Already have an account? <a href="/login" class="text-indigo-600">Login here</a>.</p>
 </main>
+

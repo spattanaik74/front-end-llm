@@ -15,3 +15,7 @@ export function clearAuthToken() {
   authToken = '';
   localStorage.removeItem('authToken'); // Clear the token from localStorage
 }
+
+export function removeAuthToken() {
+  authToken = ''; // Set authToken to an empty string
+}
